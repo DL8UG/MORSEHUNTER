@@ -1,0 +1,78 @@
+name: Release
+
+# macOS minutes cost ten times as much on a private repo, Windows twice: only on a tag or by hand.
+# By hand the packages are artifacts of the run, on a tag `v*` they go into a release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - name: Tests
+        run: cargo test --release --locked --workspace
+      - name: App and disk image
+        run: tools/macos-bundle.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*.dmg
+
+  linux:
+    # the oldest runner: its glibc 2.35 sets how old a system may be
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Tests
+        run: cargo test --release --locked --workspace
+      - name: Package
+        run: tools/linux-bundle.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*.tar.gz
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Tests
+        run: cargo test --release --locked --workspace
+      - name: Package
+        run: tools/windows-bundle.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [macos, linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=tools/release-notes.md
+          gh release create "$GITHUB_REF_NAME" dist/* --title "MORSEHUNTER $GITHUB_REF_NAME" --notes-file "$notes"

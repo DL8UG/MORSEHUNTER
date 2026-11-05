@@ -1,0 +1,56 @@
+name: Mac smoke
+
+# Starts the released disk image on Mac runners and keeps what it shows and says.
+# By hand only, Mac minutes count tenfold: gh workflow run mac-smoke.yml [-f tag=v0.1.5]
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to test, empty for the latest release
+        required: false
+        default: ""
+
+jobs:
+  smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    steps:
+      - name: Start the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+          sw_vers; uname -m
+          mkdir -p out
+          v="${{ inputs.tag }}"
+          if [ -z "$v" ]; then v=$(gh release view -R "$GITHUB_REPOSITORY" --json tagName -q .tagName); fi
+          gh release download "$v" -R "$GITHUB_REPOSITORY" -p '*.dmg' -D dl
+          dmg=$(ls dl/*.dmg)
+          hdiutil attach "$dmg" -mountpoint /Volumes/mh -nobrowse -quiet
+          cp -R /Volumes/mh/MORSEHUNTER.app /Applications/
+          app=/Applications/MORSEHUNTER.app
+          RUST_BACKTRACE=1 "$app/Contents/MacOS/morsehunter" > out/direct.log 2>&1 &
+          pid=$!
+          sleep 12
+          if kill -0 $pid 2>/dev/null; then echo "direct: alive" | tee -a out/summary.txt; kill $pid; else wait $pid; echo "direct: exited $?" | tee -a out/summary.txt; fi
+          cat out/direct.log
+          sleep 2
+          # as a browser download leaves it
+          xattr -w com.apple.quarantine "0083;$(printf %x $(date +%s));Safari;" "$app"
+          xattr -l "$app"
+          ( spctl -a -vv -t exec "$app" 2>&1 | tee -a out/summary.txt ) & sp=$!
+          sleep 20; kill $sp 2>/dev/null || true
+          open "$app" & op=$!
+          sleep 12; kill $op 2>/dev/null || true
+          if pgrep -x morsehunter >/dev/null; then echo "quarantined open: alive" | tee -a out/summary.txt; pkill -x morsehunter; else echo "quarantined open: not running" | tee -a out/summary.txt; fi
+          cp ~/Library/Logs/DiagnosticReports/*morsehunter* out/ 2>/dev/null || true
+          cat out/summary.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-${{ matrix.os }}
+          path: out

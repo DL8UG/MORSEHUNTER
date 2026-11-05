@@ -1,0 +1,11 @@
+[workspace]
+members = ["crates/sim", "crates/app"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.4"
+edition = "2024"
+license = "MPL-2.0"
+
+[profile.dev]
+opt-level = 1

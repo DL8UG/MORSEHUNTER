@@ -1,0 +1,29 @@
+[package]
+name = "morsehunter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+morse-runner-sim = { path = "../sim" }
+egui = { version = "0.37", features = ["default_fonts"] }
+egui-winit = "0.37"
+egui-wgpu = "0.37"
+winit = "0.30"
+cpal = "0.18"
+rtrb = "0.4"
+pollster = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.9"
+directories = "6"
+hound = "3"
+sys-locale = "0.3"
+midir = "0.11"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Console"] }
+
+[build-dependencies]
+embed-resource = "3"

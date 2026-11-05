@@ -1,0 +1,10 @@
+MORSEHUNTER is a reimplementation of Morse Runner 1.68, a CW contest simulator
+Copyright (C) 2004-2006 Alex Shovkoplyas, VE3NEA, https://github.com/VE3NEA/MorseRunner
+licensed under the Mozilla Public License 2.0.
+
+The simulation, station behaviour, audio model and scoring in crates/sim follow that
+source closely and stay under the same license. See LICENSE.
+
+Country prefixes come from AD1C's cty.dat, https://www.country-files.com.
+Country names in the other languages are based on the translations of the iso-codes
+project, https://salsa.debian.org/iso-codes-team/iso-codes.
