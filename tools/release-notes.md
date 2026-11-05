@@ -30,3 +30,5 @@ Open the disk image and drag MORSEHUNTER to Applications. The app has no Apple d
 - window and manual in English, German, French, Spanish, Portuguese, Italian, Polish and Russian
 
 Settings and scores of earlier builds (folder `morse-runner-rs`) move to the new folder `morsehunter` on the first start.
+
+Bug reports, ideas, remarks and changes are welcome in the [issue tracker](https://github.com/DL8UG/MORSEHUNTER/issues).

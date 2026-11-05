@@ -16,6 +16,13 @@ The Options page with station, speed, band conditions, paddle and where the call
 
 ![The Options page](docs/options.png)
 
+## Feedback
+
+Bug reports, ideas and remarks are welcome in the
+[issue tracker](https://github.com/DL8UG/MORSEHUNTER/issues). That goes for changes too.
+Send a pull request, or open an issue first if the change is larger. Reports of how it
+runs on Windows and macOS help most, since it is mostly tested on Linux.
+
 ## Install
 
 Every release on GitHub has a package for Linux (x86_64, glibc 2.35 or newer), a zip for
