@@ -8,6 +8,14 @@ Alex Shovkoplyas, VE3NEA, with its own window and with paddle input on top of th
 Stations, operators, band model and scoring follow the original source closely, so it
 stays under the Mozilla Public License 2.0. See `NOTICE`.
 
+A Pile-Up run after seven minutes, twelve contacts in the log.
+
+![MORSEHUNTER in a Pile-Up run](docs/operate.png)
+
+The Options page with station, speed, band conditions, paddle and where the callers come from.
+
+![The Options page](docs/options.png)
+
 ## Install
 
 Every release on GitHub has a package for Linux (x86_64, glibc 2.35 or newer), a zip for
