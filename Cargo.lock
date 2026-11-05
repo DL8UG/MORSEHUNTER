@@ -1533,14 +1533,14 @@ dependencies = [
 
 [[package]]
 name = "morse-runner-sim"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "morsehunter"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "cpal",
  "directories",
